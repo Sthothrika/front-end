@@ -1,0 +1,23 @@
+<html>
+    <head>
+        cc
+    </head>
+    <body>
+        <h1 id="msg"></h1>
+       
+            <input type="number" id="num1" placeholder="Enter first number"><br><br>
+            <input type="number" id="num2" placeholder="Enter second number"><br><br>
+            <button id="addBtn" onclick="addition()"></button><br><br>
+            <h2 id="result"></h2>
+            <script>
+                function addition(){
+                    let n1 = parseFloat(document.getElementById("num1").value);
+                    let n2 = parseFloat(document.getElementById("num2").value);
+                    let sum = n1+n2;
+                    document.getElementById("result").innerHTML = sum;
+                }
+            </script>
+
+        
+    </body>           
+</html>

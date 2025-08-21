@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <title>Day Name</title>
+    </head>
+    <body>
+        <h2>Day Name</h2>
+        <input type="number" id="dayNumber" placeholder="Enter day number(1-7)"><br><br>
+        <button id="dayBtn" onclick="getDayName()">Get Name</button><br><br>
+        <h3 id="dayName"></h3>
+        <script>
+            function getDayName(){
+                let dayNumber = parseInt(document.getElementById("dayNumber").value);
+                let dayName;
+                switch(dayNumber){
+                    case 1:
+                        dayName = "Sunday";
+                        break;
+                    case 2:
+                        dayName = "Monday";
+                        break;
+                    case 3:
+                        dayName = "Tuesday";
+                        break;
+                    case 4:
+                        dayName = "Wednesday";
+                        break;
+                    case 5:
+                        dayName = "Thursday";
+                        break;
+                    case 6:
+                        dayName = "Friday";
+                        break;
+                    case 7:
+                        dayName = "Saturday";
+                        break;
+                    default:
+                        dayName = "Invalid day number!";
+                }
+                document.getElementById("dayName").innerText = dayName;
+            }
+        </script>
+    </body>
+</html>
