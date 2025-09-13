@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simple Registration Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 10px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .error {
+      color: red;
+      font-size: 14px;
+      height: 18px;
+      margin-top: 3px;
+    }
+    .valid {
+      border: 2px solid green;
+      background-color: #e0ffe0;
+    }
+    .invalid {
+      border: 2px solid red;
+      background-color: #ffe0e0;
+    }
+    .success-message {
+      color: green;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 15px;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Registration Form</h2>
+  <form id="regForm" novalidate>
+    <div class="form-group">
+      <label for="fullName">Full Name *</label>
+      <input type="text" id="fullName" name="fullName" required />
+      <div class="error" id="fullNameError"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email *</label>
+      <input type="email" id="email" name="email" required />
+      <div class="error" id="emailError"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password * (min 8 chars, 1 special char)</label>
+      <input type="password" id="password" name="password" required />
+      <div class="error" id="passwordError"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="phone">Phone Number * (10 digits)</label>
+      <input type="text" id="phone" name="phone" required />
+      <div class="error" id="phoneError"></div>
+    </div>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <div class="success-message" id="successMessage"></div>
+
+  <script>
+    // Get form and input elements
+    const form = document.getElementById('regForm');
+    const fullName = document.getElementById('fullName');
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const phone = document.getElementById('phone');
+
+    const fullNameError = document.getElementById('fullNameError');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    const phoneError = document.getElementById('phoneError');
+    const successMessage = document.getElementById('successMessage');
+
+    // Simple email check using regex
+    function isEmailValid(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+
+    // Check if password has special character and min length 8
+    function isPasswordStrong(password) {
+      const specialChar = /[!@#$%^&*(),.?":{}|<>]/;
+      return password.length >= 8 && specialChar.test(password);
+    }
+
+    // Check if phone has exactly 10 digits
+    function isPhoneValid(phone) {
+      const digitsOnly = /^\d{10}$/;
+      return digitsOnly.test(phone);
+    }
+
+    // Show error message and mark input invalid
+    function showError(input, errorElem, message) {
+      errorElem.textContent = message;
+      input.classList.add('invalid');
+      input.classList.remove('valid');
+    }
+
+    // Clear error message and mark input valid
+    function showValid(input, errorElem) {
+      errorElem.textContent = '';
+      input.classList.remove('invalid');
+      input.classList.add('valid');
+    }
+
+    // Validation functions for each field
+    function validateFullName() {
+      if (fullName.value.trim() === '') {
+        showError(fullName, fullNameError, 'Full Name is required');
+        return false;
+      }
+      if (fullName.value.trim().length < 3) {
+        showError(fullName, fullNameError, 'Full Name must be at least 3 characters');
+        return false;
+      }
+      showValid(fullName, fullNameError);
+      return true;
+    }
+
+    function validateEmailField() {
+      if (email.value.trim() === '') {
+        showError(email, emailError, 'Email is required');
+        return false;
+      }
+      if (!isEmailValid(email.value.trim())) {
+        showError(email, emailError, 'Please enter a valid email');
+        return false;
+      }
+      showValid(email, emailError);
+      return true;
+    }
+
+    function validatePasswordField() {
+      if (password.value === '') {
+        showError(password, passwordError, 'Password is required');
+        return false;
+      }
+      if (!isPasswordStrong(password.value)) {
+        showError(password, passwordError, 'Password must be 8+ chars with special char');
+        return false;
+      }
+      showValid(password, passwordError);
+      return true;
+    }
+
+    function validatePhoneField() {
+      if (phone.value.trim() === '') {
+        showError(phone, phoneError, 'Phone number is required');
+        return false;
+      }
+      if (!isPhoneValid(phone.value.trim())) {
+        showError(phone, phoneError, 'Phone number must be 10 digits');
+        return false;
+      }
+      showValid(phone, phoneError);
+      return true;
+    }
+
+    // Add event listeners for real-time validation
+    fullName.addEventListener('input', validateFullName);
+    email.addEventListener('input', validateEmailField);
+    password.addEventListener('input', validatePasswordField);
+    phone.addEventListener('input', validatePhoneField);
+
+    // On form submit
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      // Validate all fields
+      const validName = validateFullName();
+      const validEmail = validateEmailField();
+      const validPassword = validatePasswordField();
+      const validPhone = validatePhoneField();
+
+      if (validName && validEmail && validPassword && validPhone) {
+        successMessage.textContent = 'Registration successful!';
+        form.reset();
+
+        // Remove valid/invalid styles after reset
+        [fullName, email, password, phone].forEach(input => {
+          input.classList.remove('valid');
+          input.classList.remove('invalid');
+        });
+      } else {
+        successMessage.textContent = '';
+      }
+    });
+  </script>
+</body>
+</html>
