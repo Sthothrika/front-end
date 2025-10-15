@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ES6 Features & Async JavaScript Weather App</title>
+    <!-- Load Tailwind CSS for modern, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Set default font and background */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1f2937, #0f172a); /* Dark gradient background */
+            min-height: 100vh;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#3b82f6',
+                        'card-bg': '#1e293b',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="p-4 flex items-center justify-center">
+
+    <div id="app-container" class="w-full max-w-md bg-card-bg text-white shadow-2xl rounded-xl p-8 transition-all duration-300">
+        <h1 class="text-3xl font-bold mb-6 text-center text-primary-blue">
+            <span class="inline-block transform transition-transform duration-500 hover:scale-105">
+                Weather Forecast App
+            </span>
+        </h1>
+
+        <!-- Task 1: Design a simple user interface -->
+        <div class="flex space-x-3 mb-6">
+            <input
+                id="city-input"
+                type="text"
+                placeholder="Enter city name..."
+                class="flex-grow p-3 rounded-lg border-2 border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:border-primary-blue focus:ring-primary-blue outline-none transition-colors"
+                aria-label="City Name Input"
+            >
+            <button
+                id="fetch-button"
+                class="bg-primary-blue hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-md hover:shadow-lg active:scale-95 transform duration-150"
+            >
+                Get Weather
+            </button>
+        </div>
+
+        <!-- Notification/Error Message Area -->
+        <div id="message-area" class="text-center mb-4 min-h-[2rem]">
+            <!-- Messages like "Loading..." or error messages appear here -->
+        </div>
+
+        <!-- Task 4: Display the retrieved data dynamically -->
+        <div id="weather-display" class="bg-gray-800 rounded-lg p-6 border-t-4 border-primary-blue hidden">
+            <p class="text-sm text-gray-400 mb-1">Current Weather in:</p>
+            <div class="flex justify-between items-center mb-4">
+                <p id="city-name-display" class="text-2xl font-extrabold"></p>
+                <!-- Temperature -->
+                <p id="temperature-display" class="text-4xl font-light text-primary-blue"></p>
+            </div>
+
+            <div class="space-y-2 text-gray-300">
+                <!-- Weather Description/Condition -->
+                <p>Condition: <span id="condition-display" class="font-medium text-lg text-white"></span></p>
+                <!-- Humidity -->
+                <p>Humidity: <span id="humidity-display" class="font-medium text-white"></span></p>
+                <!-- Wind Speed -->
+                <p>Wind Speed: <span id="wind-display" class="font-medium text-white"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script type="text/javascript">
+        // ES6: Use of const/let for block scoping
+        // IMPORTANT: Replace this placeholder with your actual OpenWeatherMap API key
+        const API_KEY = "YOUR_OPENWEATHERMAP_API_KEY";
+        const BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
+        const LAST_CITY_KEY = 'lastSearchedCity';
+
+        // DOM element selections
+        const cityInput = document.getElementById('city-input');
+        const fetchButton = document.getElementById('fetch-button');
+        const messageArea = document.getElementById('message-area');
+        const weatherDisplay = document.getElementById('weather-display');
+        
+        const cityNameDisplay = document.getElementById('city-name-display');
+        const temperatureDisplay = document.getElementById('temperature-display');
+        const conditionDisplay = document.getElementById('condition-display');
+        const humidityDisplay = document.getElementById('humidity-display');
+        const windDisplay = document.getElementById('wind-display');
+
+        /**
+         * Clears the current weather display and message area.
+         */
+        const resetUI = () => {
+            weatherDisplay.classList.add('hidden');
+            messageArea.innerHTML = '';
+        };
+
+        /**
+         * Task 4: Updates the DOM with the current weather data in a user-friendly format.
+         * @param {Object} data - The structured weather data object.
+         */
+        const updateWeatherDisplay = (data) => {
+            // ES6: Destructuring and template literals
+            const { temp, humidity } = data.main;
+            const conditionRaw = data.weather[0].description;
+            const windSpeed = data.wind.speed;
+
+            // Simple function to capitalize first letter of each word
+            const formatCondition = (text) => text.split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+
+            cityNameDisplay.textContent = data.name;
+            // Display temperature in Celsius (since units=metric was used)
+            temperatureDisplay.textContent = `${temp.toFixed(1)}°C`;
+            conditionDisplay.textContent = formatCondition(conditionRaw);
+            humidityDisplay.textContent = `${humidity}%`;
+            windDisplay.textContent = `${windSpeed} m/s`;
+
+            weatherDisplay.classList.remove('hidden');
+        };
+
+        /**
+         * Task 5: Saves the last successfully fetched city to localStorage.
+         * @param {string} city - The name of the city to save.
+         */
+        const saveLastCity = (city) => {
+            try {
+                localStorage.setItem(LAST_CITY_KEY, city.trim());
+            } catch (error) {
+                console.warn("localStorage is unavailable. Cannot save city preference.", error);
+            }
+        };
+
+        /**
+         * Task 2 & 3: Uses fetch and async/await to retrieve and handle weather data.
+         * Includes proper error handling (Promises or async/await syntax).
+         * @param {string} city - The city name to fetch weather for.
+         */
+        const fetchWeatherData = async (city) => {
+            resetUI();
+            
+            const cityName = city ? city.trim() : '';
+
+            if (!cityName) {
+                messageArea.innerHTML = '<p class="text-yellow-400">Please enter a city name to search.</p>';
+                return;
+            }
+
+            if (API_KEY === "YOUR_OPENWEATHERMAP_API_KEY") {
+                messageArea.innerHTML = '<p class="text-red-500 font-bold">ERROR: Please replace "YOUR_OPENWEATHERMAP_API_KEY" with your actual key.</p>';
+                return;
+            }
+
+            const encodedCity = encodeURIComponent(cityName);
+            const apiUrl = `${BASE_URL}?q=${encodedCity}&units=metric&appid=${API_KEY}`;
+            
+            messageArea.innerHTML = `<p class="text-primary-blue font-medium animate-pulse">Fetching data for ${cityName}...</p>`;
+
+            try {
+                // Async/Await for cleaner promise handling
+                const response = await fetch(apiUrl);
+
+                // Proper error handling for failed API responses (e.g., 404 Not Found)
+                if (!response.ok) {
+                    let errorMessage;
+                    if (response.status === 404) {
+                        errorMessage = `Error: City "${cityName}" not found.`;
+                    } else if (response.status === 401) {
+                         errorMessage = "Error: Invalid API Key. Check the API key in the code.";
+                    } else {
+                        errorMessage = `HTTP Error! Status ${response.status}.`;
+                    }
+                    // Throw an error to be caught by the catch block below
+                    throw new Error(errorMessage);
+                }
+
+                const data = await response.json();
+
+                // Success: Update UI and save to local storage
+                messageArea.innerHTML = ''; 
+                updateWeatherDisplay(data);
+                saveLastCity(cityName);
+
+            } catch (error) {
+                // Proper error handling for network issues or custom API errors thrown above
+                console.error("Weather data fetch failed:", error);
+                // Display user-friendly error message
+                messageArea.innerHTML = `<p class="text-red-500 font-semibold p-2 rounded-lg bg-red-900 bg-opacity-30">${error.message}</p>`;
+            }
+        };
+
+        /**
+         * Task 5: Checks localStorage on page load and initiates the fetch if a city is found.
+         */
+        const initializeApp = () => {
+            try {
+                const lastCity = localStorage.getItem(LAST_CITY_KEY);
+                if (lastCity) {
+                    cityInput.value = lastCity;
+                    // Automatically fetch and display weather for the last searched city
+                    fetchWeatherData(lastCity); 
+                } else {
+                    messageArea.innerHTML = '<p class="text-gray-400">Enter a city and click "Get Weather".</p>';
+                }
+            } catch (error) {
+                console.warn("localStorage check failed:", error);
+                messageArea.innerHTML = '<p class="text-gray-400">Enter a city and click "Get Weather".</p>';
+            }
+        };
+
+        // Event listener for the button click
+        fetchButton.addEventListener('click', () => {
+            fetchWeatherData(cityInput.value);
+        });
+
+        // Event listener for pressing 'Enter' in the input field
+        cityInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                fetchWeatherData(cityInput.value);
+            }
+        });
+
+        // Start the application initialization flow
+        initializeApp();
+
+    </script>
+</body>
+</html>
