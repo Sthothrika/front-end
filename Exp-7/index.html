@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Bookstore</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        #books-container {
+            flex: 2;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #cart-container {
+            flex: 1;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .book {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .book:last-child {
+            border-bottom: none;
+        }
+        .book h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .book p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .book-details {
+            flex-grow: 1;
+        }
+        .add-to-cart {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .add-to-cart:hover {
+            background-color: #218838;
+        }
+        .out-of-stock {
+            color: red;
+            font-weight: bold;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .remove-from-cart {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .remove-from-cart:hover {
+            background-color: #c82333;
+        }
+        #cart-total {
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-top: 15px;
+            text-align: right;
+        }
+        #cart-items-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Online Bookstore</h1>
+    <div class="container">
+        <section id="books-container">
+            <h2>Available Books</h2>
+        </section>
+        <section id="cart-container">
+            <h2>Shopping Cart</h2>
+            <ul id="cart-items-list">
+                </ul>
+            <div id="cart-total">
+                </div>
+        </section>
+    </div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
